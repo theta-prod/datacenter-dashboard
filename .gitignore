@@ -1,1 +1,6 @@
 *.log
+*.config
+venv
+.replit
+replit.nix
+.env
