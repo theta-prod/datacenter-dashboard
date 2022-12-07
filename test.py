@@ -1,26 +1,11 @@
-from datetime import datetime, tzinfo
-from typing import Union, Dict, Any, TypedDict, Optional, Tuple
+from datetime import datetime
+from typing import Any, Union, Dict, TypedDict
 from elasticsearch import Elasticsearch
-from elastic_transport import ObjectApiResponse
-
-# es = Elasticsearch( #type:ignore
-#     'http://localhost:9200',
-#     basic_auth=("elastic","elastic-pasaword")
-# )
-
-# doc = {
-#     'author': 'author_name',
-#     'text': 'Interensting 213123...',
-#     'timestamp': datetime.now(),
-# }
-
-# resp = es.index(index="test-index", id="GQ_2vIQB1D5s2btDFVSP", document=doc) #updated
-# resp = es.index(index="test-index", document=doc) #created
-# res = es.search(index="test-index",query={"match_all":{}})
-# print(res["hits"]["hits"])
 
 
-DocContent = Dict[str, Union[datetime,str]]
+
+
+DocContent = Dict[str, Union[datetime, str, Dict[Any, Any]]]
 
 
 class ConnectConfigMap(TypedDict):
@@ -39,12 +24,10 @@ class DbOPResponse(TypedDict):
     _index: str
     _type: str
     _id: str
-    # _version: int
     result: str
-    # _shards: Dict[str, int]
-    # _seq_no: int
-    # _primary_term: int
 
+
+## Connect Client
 def initClient(configMap: ConnectConfigMap) -> ElasticClient:
     return {
         "configMap": configMap,
@@ -53,17 +36,24 @@ def initClient(configMap: ConnectConfigMap) -> ElasticClient:
             basic_auth=(configMap['username'], configMap['password'])
         )
     }
- 
 def close(ec: ElasticClient) -> None: 
     ec['client'].close()
 
+
+## Operation 
 def insert(ec: ElasticClient, doc: DocContent) -> DbOPResponse: 
-    return ec['client'].index(index=ec['configMap']['indexName'], document=doc) # type:ignore
+    return ec.index(index=ec['configMap']['indexName'], document=doc) # type:ignore
+def update(ec: ElasticClient, id:str, doc: DocContent) -> DbOPResponse: 
+    return ec.index(index=ec['configMap']['indexName'], id=id, document=doc) # type:ignore
+def delete(cm: ElasticClient, id:str) -> DbOPResponse: ...
+def search_a_day(cm: ElasticClient, date: str) -> DbOPResponse: ...
 
-def update(cm: ElasticClient, id:str, doc: DocContent): ...
-def delete(cm: ElasticClient, id:str): ...
-def search(cm: ElasticClient, id:str, query: Dict[str,Dict[Any, Any]]): ...
 
+
+
+
+
+# Example
 client = initClient({
     "indexName": "test-index",
     "timezone": "Asia/Taipei",
@@ -81,6 +71,3 @@ r = insert(client, data)
 print(r)
 print(type(r))
 close(client)
-
-
-
