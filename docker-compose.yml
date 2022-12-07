@@ -6,7 +6,10 @@ services:
       discovery.type: single-node
       ELASTIC_PASSWORD: elastic-pasaword #username is `elastic`
       xpack.security.enabled: "true"
+      xpack.security.sameSiteCookies: "None"
       xpack.license.self_generated.type: basic
+    volumes:
+      - ./elasticsearch:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
 
