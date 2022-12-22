@@ -1,7 +1,11 @@
-version: "3.3"
+version: "3.9"
 services:
   elasticsearch:
     image: elasticsearch:7.17.2 # 8.3.1 # 7.17.2
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
     environment:
       discovery.type: single-node
       ELASTIC_PASSWORD: elastic-pasaword #username is `elastic`
@@ -15,6 +19,10 @@ services:
 
   kibana:
     image: kibana:7.17.2 # 8.3.1 # 7.17.2
+    deploy:
+      resources: 
+        limits:
+          memory: 2048M
     environment:
       ELASTICSEARCH_USERNAME: "elastic" 
       ELASTICSEARCH_PASSWORD: "elastic-pasaword" 
